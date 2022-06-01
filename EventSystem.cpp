@@ -2,35 +2,38 @@
 // Created by 16499 on 2022/5/27.
 //
 
+#include <cstdarg>
 #include "EventSystem.h"
-
+extern EVENT_DEFINE g_Events[]=
+{
+        {"test"},
+        {"test2"},
+        {"ThreatChanged"},
+        {"GetDamage"}
+};
 void EventSystem::Update(float dt) {
-   for(auto i:conditionFuncContainer)
-   {
-       if((i.second)(dt))
-       {
-           eventQueue.emplace_back(i.first);
-           break;
-       }
-   }
 
     for (auto & event : eventQueue)
     {
-        std::pair<HandlerFuncIterator,HandlerFuncIterator> range = handlerFuncContainer.equal_range(event);
-        for (auto& i = range.first; i != range.second; ++i)
+        for(auto func=event->pEventDef->listFunc.begin();func!=event->pEventDef->listFunc.end();func++)
         {
-            (i->second)(dt);
+                (*func)(event);
         }
     }
     eventQueue.clear();
 }
 
-std::string EventSystem::Print() {
-    return "";
+std::string EventSystem::Print(int index) {
+    std::string buffer;
+    buffer+="Event Records:";
+    for(auto i:eventRecords){
+        buffer+="["+i+"]";
+    }
+    return buffer;
 }
 
-void EventSystem::RegisterEventHandle(const std::string& event, const std::function<void(float)>& func) {
-    handlerFuncContainer.insert(std::make_pair(event,func));
+void EventSystem::RegisterEventHandler(const std::string& event, const std::function<void(EVENT* pEvent)>& func) {
+    eventDefContainer[event]->listFunc.emplace_back(func);
 }
 
 EventSystem &EventSystem::Get() {
@@ -38,13 +41,34 @@ EventSystem &EventSystem::Get() {
     return  instance;
 }
 
-void EventSystem::RegisterEventTrigger(const std::string &event, const std::function<bool(float)> &func) {
-    conditionFuncContainer.insert(std::make_pair(event,func));
+EVENT* EventSystem::HasHappened(const std::string & name) {
+   for(auto event:eventQueue){
+       if(event->pEventDef->name==name)
+           return event;
+   }
+   return nullptr;
 }
 
-bool EventSystem::HasHappened(const std::string & name) {
-    EventQueueIterator iterator;
-    iterator = std::find(eventQueue.begin(),eventQueue.end(), name);
-    return iterator != eventQueue.end();
+void EventSystem::PushEvent(const std::string & name, int n, ...) {
+    EVENT* event=new EVENT;
+    event->pEventDef=eventDefContainer[name];
+    va_list args;
+    va_start(args, n);
+    for (int i = 0; i <n; ++i) {
+        event->vArg.emplace_back(va_arg(args,char*));
+    }
+    va_end(args);
+
+    eventQueue.emplace_back(event);
+    eventRecords.emplace_back(event->pEventDef->name);
+}
+
+void EventSystem::init() {
+    int nEventNum = sizeof(g_Events) / sizeof(EVENT_DEFINE);
+
+    for (int i = 0; i < nEventNum; i++)
+    {
+        eventDefContainer[g_Events[i].name] = &(g_Events[i]);
+    }
 }
 

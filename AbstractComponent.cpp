@@ -3,11 +3,3 @@
 //
 
 #include "AbstractComponent.h"
-
-void AbstractComponent::Update(float dt) {
-
-}
-
-std::string AbstractComponent::Print() {
-    return "";
-}

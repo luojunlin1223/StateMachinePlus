@@ -7,17 +7,19 @@
 
 #include <functional>
 #include <string>
+#include <utility>
 #include "AbstractComponent.h"
+#include "EventSystem.h"
 class State;
-typedef std::function<bool()> StateTransitionFunction;
+typedef std::function<bool(EVENT*)> StateTransitionFunction;
 class StateTransition
 {
 public:
-    StateTransition(AbstractComponent* source, AbstractComponent* dest,StateTransitionFunction f,std::string trigger="") {
+    StateTransition(AbstractComponent* source, AbstractComponent* dest,StateTransitionFunction f,std::string _trigger) {
         sourceState = source;
         destinationState = dest;
         transitionFunction = std::move(f);
-        trigger = std::move(trigger);
+        trigger = _trigger;
     }
     bool CanTransition() const;
     AbstractComponent* GetDestinationState() const { return destinationState; }

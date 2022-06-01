@@ -8,16 +8,15 @@
 #include <string>
 #include <functional>
 #include "AbstractComponent.h"
-class AbstractStateMachine{
+using ContainerIterator = std::map<std::string,AbstractComponent*>::iterator;
+class AbstractStateMachine:public AbstractComponent{
 public:
     AbstractStateMachine()=default;
-    virtual ~AbstractStateMachine()=default;
+    ~AbstractStateMachine() override =default;
     void AddComponent(const std::string&,AbstractComponent*);
-    AbstractComponent* GetComponent(const std::string&);
+    AbstractComponent *GetComponent(const std::string &);
 protected:
     std::map<std::string,AbstractComponent*> ComponentContainer;
-   /* std::multimap<std::string,std::function<bool()>> conditionFuncContainer;
-    std::multimap<std::string,std::function<void()>> handlerFuncContainer; for event */
 };
 
 

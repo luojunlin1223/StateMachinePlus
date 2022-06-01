@@ -6,19 +6,18 @@
 #define STATEMACHINEPLUS_STATEMACHINE_H
 #include <map>
 #include "AbstractStateMachine.h"
-#include "AbstractComponent.h"
 class StateTransition;
 using TransitionContainer = std::multimap<AbstractComponent*, StateTransition*>;
 using TransitionIterator = TransitionContainer::iterator;
-class StateMachine: public AbstractStateMachine,public AbstractComponent{
+class StateMachine: public AbstractStateMachine{
 public:
-    explicit StateMachine(const std::string& name,AbstractComponent* defaultComponent)
-    :activeComponent(defaultComponent){ AddComponent(name,defaultComponent);}
+    StateMachine(const std::string& name,AbstractComponent* defaultComponent)
+    :activeComponent(defaultComponent){AddComponent(name,defaultComponent);}
 
-    ~StateMachine() override =default;
+    ~StateMachine() override{delete activeComponent;activeComponent= nullptr;};
     void Update(float dt) override;
-    std::string Print() override;
-
+    std::string Print(int index) override;
+    void SetActiveComponent(AbstractComponent*);
     void AddTransition(StateTransition* t);
 protected:
     AbstractComponent* activeComponent;

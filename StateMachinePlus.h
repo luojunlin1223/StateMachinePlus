@@ -5,13 +5,12 @@
 #ifndef STATEMACHINEPLUS_STATEMACHINEPLUS_H
 #define STATEMACHINEPLUS_STATEMACHINEPLUS_H
 #include "AbstractStateMachine.h"
-#include "AbstractComponent.h"
-class StateMachinePlus: public AbstractStateMachine,public AbstractComponent{
+class StateMachinePlus: public AbstractStateMachine{
 public:
     StateMachinePlus()=default;
     ~StateMachinePlus() override =default;
     void Update(float dt) override;
-    std::string Print() override;
+    std::string Print(int index) override;
 };
 
 

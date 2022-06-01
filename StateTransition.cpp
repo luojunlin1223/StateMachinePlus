@@ -3,11 +3,9 @@
 //
 
 #include "StateTransition.h"
-#include "EventSystem.h"
 bool StateTransition::CanTransition() const
 {
-    if (trigger.empty()||EventSystem::Get().HasHappened(trigger))
-        return transitionFunction();
-    else
-        return false;
+    auto event=EventSystem::Get().HasHappened(trigger);
+    if (trigger.empty()||event) return transitionFunction(event);
+    return false;
 }

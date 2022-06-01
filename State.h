@@ -18,6 +18,7 @@ public:
         if (func != nullptr)
             func(dt);
     }
+    std::string Print(int index)override;
 protected:
     StateUpdateFunction func;
 };

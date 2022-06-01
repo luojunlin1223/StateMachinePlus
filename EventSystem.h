@@ -6,26 +6,34 @@
 #define STATEMACHINEPLUS_EVENTSYSTEM_H
 #include "AbstractStateMachine.h"
 #include <list>
-using HandlerFuncContainer = std::multimap<std::string,std::function<void(float)>>;
-using HandlerFuncIterator = HandlerFuncContainer::iterator;
-using ConditionFuncContainer = std::multimap<std::string,std::function<bool(float)>> ;
-using ConditionFuncIterator = ConditionFuncContainer::iterator;
-using EventQueueIterator=std::list<std::string>::iterator;
-
-class EventSystem :public AbstractStateMachine,AbstractComponent{
+#include <vector>
+struct EVENT;
+struct EVENT_DEFINE{
+    std::string name;
+    std::list<std::function<void(EVENT*)>> listFunc;
+};
+struct EVENT{
+    EVENT_DEFINE* pEventDef;
+    std::vector<std::string> vArg;
+};
+using EventDefContainer = std::map<std::string,EVENT_DEFINE*>;
+using EventDefContainerIterator = EventDefContainer::iterator;
+using EventQueueIterator=std::list<EVENT*>::iterator;
+class EventSystem :public AbstractStateMachine{
 public:
-    EventSystem()=default;
+    EventSystem(){init();}
     ~EventSystem() override =default;
     void Update(float dt) override;
-    std::string Print() override;
-    void RegisterEventHandle(const std::string&, const std::function<void(float)>&);
-    void RegisterEventTrigger(const std::string&, const std::function<bool(float)>&);
+    std::string Print(int index) override;
+    void RegisterEventHandler(const std::string&, const std::function<void(EVENT*)>&);
+    void PushEvent(const std::string&,int n,...);
     static EventSystem& Get();
-    bool HasHappened(const std::string&);
+    EVENT* HasHappened(const std::string&);
 private:
-    ConditionFuncContainer conditionFuncContainer;
-    HandlerFuncContainer handlerFuncContainer;
-    std::list<std::string> eventQueue;
+    void init();
+    EventDefContainer eventDefContainer;
+    std::list<EVENT*> eventQueue;
+    std::vector<std::string> eventRecords;
 };
 
 

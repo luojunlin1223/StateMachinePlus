@@ -3,3 +3,8 @@
 //
 
 #include "State.h"
+
+std::string State::Print(int index) {
+    std::string buffer("[State]\n");
+    return buffer;
+}

@@ -15,19 +15,38 @@ void StateMachine::Update(float dt) {
     {
         if (i->second->CanTransition())
         {
-            activeComponent = i->second->GetDestinationState();
+            activeComponent= i->second->GetDestinationState();
         }
     }
-
-
-
 }
 
-std::string StateMachine::Print() {
-    return "";
+std::string StateMachine::Print(int index) {
+    std::string active;
+    for(auto & it : ComponentContainer)
+    {
+        if(it.second==activeComponent)
+        {
+            active=it.first;
+            break;
+        }
+    }
+    std::string buffer("[StateMachine]");
+   buffer+="<"+active+">\n";
+    for(auto i:ComponentContainer)
+    {
+        for (int j = 0; j < index; ++j) {
+            buffer+="    ";
+        }
+        buffer+="("+i.first+")"+i.second->Print(index+1);
+    }
+    return buffer;
 }
 
 void StateMachine::AddTransition(StateTransition *t) {
     allTransitions.insert(std::make_pair(t->GetSourceState(), t));
+}
+
+void StateMachine::SetActiveComponent(AbstractComponent *a) {
+    activeComponent=a;
 }
 
